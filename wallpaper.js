@@ -33,10 +33,10 @@ class WallpaperManager {
 			g = Math.floor(g / pixelCount);
 			b = Math.floor(b / pixelCount);
 			
-			Logger.log(`提取平均颜色: RGB(${r}, ${g}, ${b})`);
+			Logger.log(`平均颜色: RGB(${r}, ${g}, ${b})`);
 			return { r, g, b };
 		} catch (error) {
-			Logger.logError(`获取平均颜色失败: ${error.message}`);
+			Logger.logError(`获取颜色失败: ${error.message}`);
 			return null;
 		}
 	}
@@ -51,7 +51,6 @@ class WallpaperManager {
 		const adjustedColor = Utils.ensureContrastWithWhite(color.r, color.g, color.b);
 		this.currentThemeColor = adjustedColor;
 		
-		const textColor = Utils.getTextColorBasedOnBackground(adjustedColor.r, adjustedColor.g, adjustedColor.b);
 		const primaryColor = `rgb(${adjustedColor.r}, ${adjustedColor.g}, ${adjustedColor.b})`;
 		const secondaryColor = `rgba(${adjustedColor.r}, ${adjustedColor.g}, ${adjustedColor.b}, 0.8)`;
 		const thirdColor = `rgba(${adjustedColor.r}, ${adjustedColor.g}, ${adjustedColor.b}, 0.4)`;
@@ -59,10 +58,9 @@ class WallpaperManager {
 		document.documentElement.style.setProperty('--primary-color', primaryColor);
 		document.documentElement.style.setProperty('--secondary-color', secondaryColor);
 		document.documentElement.style.setProperty('--third-color', thirdColor);
-		document.documentElement.style.setProperty('--text-color', textColor);
 		
 		const whiteContrast = Utils.getContrastRatio(adjustedColor.r, adjustedColor.g, adjustedColor.b, 255, 255, 255);
-		Logger.log(`应用主题颜色: RGB(${adjustedColor.r}, ${adjustedColor.g}, ${adjustedColor.b}), 文字颜色: ${textColor}, 与白色对比度: ${whiteContrast.toFixed(2)}`);
+		Logger.log(`主题色: RGB(${adjustedColor.r}, ${adjustedColor.g}, ${adjustedColor.b}), 对比度: ${whiteContrast.toFixed(2)}`);
 	}
 	
 	// 更新壁纸源选择
@@ -72,7 +70,7 @@ class WallpaperManager {
 		
 		if (!internationalChecked && !chineseChecked) {
 			this.wallPaperSources.chinese.enabled = true;
-			Logger.log('已自动选择中国版壁纸（必须至少选择一个）');
+			Logger.log('至少选择一个');
 			return true; // 表示需要更新UI
 		}
 		return false;
@@ -177,10 +175,10 @@ class WallpaperManager {
 						if (avgColor) {
 							this.applyThemeColor(avgColor);
 						} else {
-							Logger.logError('无法获取平均颜色，保持当前主题');
+							Logger.logError('无法获取平均色，保持当前主题色');
 						}
 					} catch (e) {
-						Logger.logError(`更新主题颜色失败: ${e.message}`);
+						Logger.logError(`更新主题色失败: ${e.message}`);
 					}
 					
 					this.applyWallpaperTransition(selectedWallpaper.url);
@@ -259,4 +257,5 @@ class WallpaperManager {
 			Logger.logError(`壁纸下载失败: ${error.message}`);
 		}
 	}
+
 }
