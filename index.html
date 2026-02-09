@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+	<meta name="theme-color" content="#00AEEF">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="MaJiang 单词">
+	<title>MaJiang 单词</title>
+	<link rel="icon" href="./favicon.png" type="image/png">
+	<link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+	<!-- 背景容器 -->
+	<div id="bg-container">
+		<div id="current-bg"></div>
+		<div id="new-bg"></div>
+	</div>
+
+	<!-- 单词卡片 -->
+	<div id="card-container">
+		<div id="card">
+			<div id="word">—</div>
+			<div id="meaning">（请导入单词表）</div>
+		</div>
+	</div>
+
+	<!-- 设置按钮 -->
+	<div id="settings-btn">
+		<img src="./Setting.svg" alt="设置">
+	</div>
+
+	<!-- 设置菜单 -->
+	<div id="settings-menu">
+		<div class="setting-group">
+			<h3>词书选择</h3>
+			<div class="custom-dropdown" id="book-select-dropdown">
+				<div class="dropdown-trigger">请选择...</div>
+				<div class="dropdown-menu"></div>
+			</div>
+			<div class="file-input-wrapper">
+				<button type="button" class="btn-primary" id="upload-btn">导入单词 CSV</button>
+				<input id="fileInput" type="file" accept=".csv,text/csv" style="display: none;">
+			</div>
+		</div>
+
+		<div class="setting-group">
+			<h3>显示控制</h3>
+			<div class="checkbox-group">
+				<label class="checkbox-option" for="show-word">
+					<input type="checkbox" id="show-word" checked>
+					<div class="custom-checkbox"></div>
+					<span class="checkbox-label">显示单词</span>
+				</label>
+				
+				<label class="checkbox-option" for="show-meaning">
+					<input type="checkbox" id="show-meaning" checked>
+					<div class="custom-checkbox"></div>
+					<span class="checkbox-label">显示释义</span>
+				</label>
+				<label class="checkbox-option" for="card-animation">
+					<input type="checkbox" id="card-animation" checked>
+					<div class="custom-checkbox"></div>
+					<span class="checkbox-label">卡片切换动画</span>
+				</label>
+			</div>
+		</div>
+
+		<div class="setting-group">
+			<h3>自动模式</h3>
+			<label class="checkbox-option" for="auto-mode">
+				<input type="checkbox" id="auto-mode">
+				<div class="custom-checkbox"></div>
+				<span class="checkbox-label">启用自动模式</span>
+			</label>
+			<div class="setting-option" style="margin-top: 10px;">
+				<label>自动切换间隔: <input type="number" id="auto-interval" min="1" max="300" value="20" class="interval-input"> 秒</label>
+			</div>
+		</div>
+
+		<div class="setting-group">
+			<h3>壁纸设置</h3>
+			<div class="checkbox-group">
+				<label class="checkbox-option" for="international-wallpaper">
+					<input type="checkbox" id="international-wallpaper" checked>
+					<div class="custom-checkbox"></div>
+					<span class="checkbox-label">国际版壁纸</span>
+				</label>
+				<label class="checkbox-option" for="chinese-wallpaper">
+					<input type="checkbox" id="chinese-wallpaper" checked>
+					<div class="custom-checkbox"></div>
+					<span class="checkbox-label">中国版壁纸</span>
+				</label>
+			</div>
+			<div class="setting-option" style="margin-top: 10px;">
+				<label>每 <input type="number" id="bg-interval" min="1" max="100" value="10" class="interval-input"> 个单词切换壁纸</label>
+			</div>
+			<button type="button" class="btn-primary" id="download-bg-btn">下载当前壁纸</button>
+		</div>
+
+		<div class="setting-group footer-links">
+			<a href="https://space.bilibili.com/1431497051" target="_blank" class="footer-link">
+				Developed by MaJiang
+			</a>
+			<a href="#" id="reset-link" class="footer-link">Reset</a>
+		</div>
+	</div>
+
+	<script src="./constants.js"></script>
+	<script src="./logger.js"></script>
+	<script src="./utils.js"></script>
+	<script src="./wallpaper.js"></script>
+	<script src="./words.js"></script>
+	<script src="./settings.js"></script>
+	<script src="./script.js"></script>
+</body>
+
+</html>

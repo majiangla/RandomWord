@@ -1,0 +1,651 @@
+@font-face {
+	font-family: 'HanYiShuSongErJian';
+	src: url('./HanYiShuSongErJian.ttf') format('truetype');
+	font-display: swap;
+	unicode-range: U+4E00-9FFF, U+3000-303F, U+FF00-FFEF;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+:root {
+	--primary-color: #00AEEF;
+	--secondary-color: rgba(0, 174, 239, 0.8);
+	--checkbox-size: 20px;
+	--checkbox-border: 2px;
+	--checkbox-radius: 4px;
+}
+
+body {
+	font-family: 'Times New Roman', 'HanYiShuSongErJian', serif;
+	width: 100vw;
+	height: 100vh;
+	background-attachment: fixed;
+	background-color: #f0f0f0;
+	position: relative;
+	overflow: hidden;
+	cursor: pointer;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-font-smoothing: antialiased;
+	-webkit-text-size-adjust: 100%;
+}
+
+/* 背景容器 */
+#bg-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	background-size: cover;
+	background-position: center center;
+	background-color: #f0f0f0;
+}
+
+/* 当前壁纸层 */
+#current-bg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-position: center center;
+	opacity: 1;
+}
+
+/* 新壁纸层 */
+#new-bg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-position: center center;
+	opacity: 0;
+}
+
+/* 通用淡入动画 */
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes cardFadeIn {
+	from { opacity: 0; transform: scale(0.95); }
+	to { opacity: 1; transform: scale(1); }
+}
+
+.fade-in {
+	animation: fadeIn 0.2s ease-out;
+}
+
+.card-fade-in {
+	animation: cardFadeIn 0.2s ease-out;
+}
+
+/* 单词卡片 */
+#card-container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 85%;
+	max-width: 700px;
+	height: 60vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#card {
+	width: 100%;
+	padding: 40px;
+	border-radius: 20px;
+	background: rgba(255, 255, 255, 0.75);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(2px);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+	text-align: center;
+}
+
+#word {
+	font-size: 4.5rem;
+	font-weight: 700;
+	color: var(--primary-color);
+	line-height: 1.1;
+	margin-bottom: 30px;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+	transition: color 0.3s ease;
+	word-break: break-word;
+	overflow-wrap: break-word;
+}
+
+#meaning {
+	color: var(--primary-color);
+	font-size: 2.2rem;
+	line-height: 1.4;
+	padding: 20px;
+	border-radius: 10px;
+	transition: color 0.3s ease;
+	word-break: break-word;
+	overflow-wrap: break-word;
+	white-space: pre-wrap;
+}
+
+/* 设置按钮 */
+#settings-btn {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.75);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(2px);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	transition: all 0.3s ease;
+}
+
+#settings-btn:hover {
+	transform: rotate(90deg);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+#settings-btn img {
+	width: 24px;
+	height: 24px;
+	transition: transform 0.3s ease;
+}
+
+/* 设置菜单 */
+#settings-menu {
+	position: fixed;
+	bottom: 80px;
+	right: 20px;
+	width: 300px;
+	background: rgba(255, 255, 255, 0.75);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(2px);
+	border-radius: 15px;
+	padding: 20px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	display: none;
+	z-index: 999;
+	opacity: 0;
+	transform: translateY(20px);
+	transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#settings-menu.show {
+	display: block;
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* 自定义下拉菜单 */
+.custom-dropdown {
+	position: relative;
+	width: 100%;
+	margin-top: 15px;
+}
+
+.dropdown-trigger {
+	width: 100%;
+	padding: 10px 12px;
+	border-radius: 5px;
+	cursor: pointer;
+	color: var(--primary-color);
+	font-size: 0.95rem;
+	transition: all 0.3s ease;
+	user-select: none;
+}
+
+.dropdown-trigger:hover {
+	border-color: var(--primary-color);
+	background: rgba(255, 255, 255, 0.7);
+	box-shadow: 0 2px 8px var(--primary-color);
+}
+
+.dropdown-menu {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background: rgba(255, 255, 255, 0.8);
+	border-top: none;
+	border-radius: 0 0 5px 5px;
+	max-height: 50vh;
+	overflow-y: auto;
+	z-index: 1001;
+	display: none;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	margin-top: -1px;
+}
+
+.dropdown-menu.show {
+	display: block;
+}
+
+.dropdown-option {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 12px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	color: var(--primary-color);
+	font-size: 0.95rem;
+}
+
+.dropdown-option:last-child {
+	border-bottom: none;
+}
+
+.dropdown-option:hover {
+	background: var(--third-color);
+	color: var(--primary-color);
+	font-weight: 500;
+}
+
+.dropdown-option .option-icon {
+	width: 28px;
+	height: 28px;
+	object-fit: contain;
+	flex-shrink: 0;
+}
+
+.dropdown-option .option-text {
+	flex: 1;
+	font-size: 0.95rem;
+	color: var(--primary-color);
+}
+
+/* 下拉菜单分割线 */
+.dropdown-divider {
+    height: 1px;
+    background-color: var(--secondary-color);
+    margin: 5px 0;
+    border: none;
+}
+
+.setting-group {
+	margin-bottom: 20px;
+}
+
+.setting-group:last-child {
+	margin-bottom: 0;
+}
+
+.setting-group h3 {
+	color: var(--primary-color);
+	font-size: 1.1rem;
+	margin-bottom: 10px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	transition: color 0.3s ease;
+}
+
+.setting-option {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+.setting-option label {
+	color: var(--primary-color);
+	font-size: 0.95rem;
+	cursor: pointer;
+}
+
+.checkbox-group {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-bottom: 15px;
+}
+
+/* 复选框选项 - 现在使用label标签 */
+.checkbox-option {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	color: var(--primary-color);
+	font-size: 0.95rem;
+	user-select: none;
+	padding: 4px 0;
+}
+
+/* 隐藏默认复选框 */
+.checkbox-option input[type="checkbox"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+	margin: 0;
+	pointer-events: none;
+}
+
+/* 自定义复选框容器 */
+.checkbox-option .custom-checkbox {
+	position: relative;
+	width: var(--checkbox-size);
+	height: var(--checkbox-size);
+	min-width: var(--checkbox-size);
+	min-height: var(--checkbox-size);
+	border: var(--checkbox-border) solid var(--primary-color);
+	border-radius: var(--checkbox-radius);
+	background: rgba(255, 255, 255, 0);
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* 复选框悬停效果 */
+.checkbox-option:hover .custom-checkbox {
+	border-color: var(--primary-color);
+	background: var(--third-color);
+	box-shadow: 0 0 0 3px var(--third-color);
+}
+
+/* 复选框选中状态 */
+.checkbox-option input[type="checkbox"]:checked + .custom-checkbox {
+	background-color: var(--primary-color);
+	border-color: var(--primary-color);
+}
+
+/* 复选框选中时的对勾 */
+.checkbox-option input[type="checkbox"]:checked + .custom-checkbox::after {
+	content: '';
+	position: absolute;
+	width: 10px;
+	height: 6px;
+	border-left: 2px solid white;
+	border-bottom: 2px solid white;
+	transform: rotate(-45deg) translate(1px, -1px);
+}
+
+/* 禁用状态 */
+.checkbox-option input[type="checkbox"]:disabled + .custom-checkbox {
+	opacity: 0.5;
+	cursor: not-allowed;
+	border-color: var(--secondary-color);
+	background: var(--third-color);
+}
+
+.checkbox-option input[type="checkbox"]:disabled:checked + .custom-checkbox {
+	background-color:var(--third-color);
+	border-color:var(--secondary-color);
+}
+
+/* 复选框标签文本 */
+.checkbox-option .checkbox-label {
+	color: var(--primary-color);
+	font-size: 0.95rem;
+	cursor: pointer;
+	line-height: 1.4;
+	margin-left: 5px;
+}
+
+.file-input-wrapper {
+	position: relative;
+	display: block;
+	margin-bottom: 15px;
+	margin-top: 12px;
+}
+
+.file-input-wrapper input[type="file"] {
+	opacity: 0;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+
+
+/* 统一的按钮样式 */
+.btn-primary {
+	display: block;
+	padding: 10px 16px;
+	background: var(--primary-color);
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-family: 'Times New Roman', 'HanYiShuSongErJian', serif;
+	font-size: 0.9rem;
+	transition: all 0.3s ease;
+	text-align: center;
+	text-decoration: none;
+	width: 100%;
+	font-weight: 500;
+	box-shadow: 0 2px 4px var(--third-color);
+}
+
+.btn-primary:hover {
+	background: var(--secondary-color);
+	box-shadow: 0 4px 8px var(--third-color);
+}
+
+.btn-primary:disabled {
+	background: #cccccc;
+	cursor: not-allowed;
+	box-shadow: none;
+	transform: none;
+}
+
+
+
+.footer-links {
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	padding-top: 10px;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.footer-link {
+	width: auto;
+	color: #666;
+	padding: 0;
+}
+
+.footer-link:hover {
+	color: var(--primary-color);
+}
+
+
+/* Interval输入框专用样式 */
+.interval-input {
+	border: none;
+	border-radius: 3px;
+	height: 30px;
+	width: 50px;
+	padding: 2px;
+	text-align: center;
+	color: var(--primary-color);
+	border-radius: 3px;
+	background: rgba(255, 255, 255, 0);
+	transition: border-color 0.2s ease;
+	font-family: 'Times New Roman', Times, serif;
+	font-size: 1.2rem;
+}
+
+.interval-input:focus {
+	outline: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+	:root {
+		--checkbox-size: 18px;
+	}
+	
+	#card-container {
+		width: 90%;
+		max-width: 600px;
+		height: 50vh;
+	}
+	
+	#card {
+		padding: 30px 20px;
+	}
+	
+	#word {
+		font-size: 3.5rem;
+		margin-bottom: 20px;
+	}
+	
+	#meaning {
+		font-size: 1.8rem;
+		padding: 15px;
+	}
+	
+	#settings-btn {
+		width: 45px;
+		height: 45px;
+		bottom: 15px;
+		right: 15px;
+	}
+	
+	#settings-menu {
+		width: 280px;
+		right: 10px;
+		bottom: 65px;
+		max-height: 70vh;
+		overflow-y: auto;
+	}
+}
+
+@media (max-width: 480px) {
+	:root {
+		--checkbox-size: 16px;
+	}
+	
+	html {
+		font-size: 14px;
+	}
+	
+	#card-container {
+		width: 95%;
+		max-width: 100%;
+		height: 45vh;
+	}
+	
+	#card {
+		padding: 20px 12px;
+		border-radius: 15px;
+	}
+	
+	#word {
+		font-size: 2.5rem;
+		margin-bottom: 15px;
+	}
+	
+	#meaning {
+		font-size: 1.2rem;
+		padding: 10px;
+		line-height: 1.3;
+	}
+	
+	#settings-btn {
+		width: 40px;
+		height: 40px;
+		bottom: 10px;
+		right: 10px;
+	}
+	
+	#settings-btn img {
+		width: 20px;
+		height: 20px;
+	}
+	
+	#settings-menu {
+		width: calc(100% - 20px);
+		right: 10px;
+		bottom: 55px;
+		max-height: 65vh;
+		overflow-y: auto;
+		max-width: 100%;
+	}
+	
+	.setting-group {
+		margin-bottom: 15px;
+	}
+	
+	.setting-group h3 {
+		font-size: 0.95rem;
+		margin-bottom: 8px;
+	}
+	
+	.checkbox-option .checkbox-label {
+		font-size: 0.85rem;
+	}
+	
+	.file-input-label,
+	.action-btn {
+		padding: 8px 12px;
+		font-size: 0.85rem;
+	}
+	
+	.footer-links {
+		gap: 15px;
+		font-size: 0.8rem;
+	}
+	
+	.footer-link {
+		font-size: 0.8rem;
+	}
+	
+	/* 触摸友好的按钮大小 */
+	input[type="checkbox"],
+	input[type="number"],
+	select {
+		min-height: 40px;
+		padding: 8px;
+	}
+}
+
+@media (max-width: 360px) {
+	#card {
+		padding: 15px 10px;
+	}
+	
+	#word {
+		font-size: 2rem;
+		margin-bottom: 10px;
+	}
+	
+	#meaning {
+		font-size: 1rem;
+		padding: 8px;
+	}
+	
+	#settings-menu {
+		width: calc(100% - 16px);
+		right: 8px;
+		bottom: 50px;
+	}
+}
