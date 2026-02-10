@@ -9,6 +9,9 @@ const CONSTANTS = {
 	// 默认自动模式状态
 	DEFAULT_AUTO_MODE: true,
 	
+	// 默认卡片动画状态
+	DEFAULT_CARD_ANIMATION: false,
+	
 	// 预定义的词书文件名
 	PREDEFINED_BOOKS: [
 		'高中.csv',

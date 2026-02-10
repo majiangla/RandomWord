@@ -8,7 +8,7 @@ class SettingsManager {
 		this.settings = {
 			showWord: true,
 			showMeaning: true,
-			cardAnimation: true,
+			cardAnimation: CONSTANTS.DEFAULT_CARD_ANIMATION,
 			autoMode: CONSTANTS.DEFAULT_AUTO_MODE,
 			autoInterval: CONSTANTS.DEFAULT_AUTO_INTERVAL,
 			bgInterval: CONSTANTS.DEFAULT_BG_INTERVAL,
