@@ -12,26 +12,31 @@ class WallpaperManager {
 	setChineseDailyBackground() {
 		const dailyWallpaperUrl = 'https://bing.img.run/uhd.php';
 		this.currentWallpaperApiUrl = dailyWallpaperUrl;
-		this.loadAndApplyWallpaper(dailyWallpaperUrl, dailyWallpaperUrl);
+		this.loadAndApplyWallpaper(dailyWallpaperUrl, dailyWallpaperUrl, { useCors: false, extractTheme: false });
 	}
 
 	// 加载并应用壁纸
-	loadAndApplyWallpaper(imageUrl, downloadUrl = imageUrl) {
+	loadAndApplyWallpaper(imageUrl, downloadUrl = imageUrl, options = {}) {
+		const { useCors = true, extractTheme = true } = options;
 		this.currentWallpaperUrl = downloadUrl;
 
 		const img = new Image();
-		img.crossOrigin = 'anonymous';
+		if (useCors) {
+			img.crossOrigin = 'anonymous';
+		}
 
 		img.onload = () => {
-			try {
-				const avgColor = this.getImageAverageColor(img);
-				if (avgColor) {
-					this.applyThemeColor(avgColor);
-				} else {
-					Logger.logError('无法获取平均色，保持当前主题色');
+			if (extractTheme) {
+				try {
+					const avgColor = this.getImageAverageColor(img);
+					if (avgColor) {
+						this.applyThemeColor(avgColor);
+					} else {
+						Logger.logError('无法获取平均色，保持当前主题色');
+					}
+				} catch (e) {
+					Logger.logError(`更新主题色失败: ${e.message}`);
 				}
-			} catch (e) {
-				Logger.logError(`更新主题色失败: ${e.message}`);
 			}
 
 			this.applyWallpaperTransition(imageUrl);
@@ -161,7 +166,7 @@ class WallpaperManager {
 			if (isChinese) {
 				const randomHistoryUrl = `https://bing.img.run/rand_uhd.php?t=${Date.now()}`;
 				this.currentWallpaperApiUrl = randomHistoryUrl;
-				this.loadAndApplyWallpaper(randomHistoryUrl, 'https://bing.img.run/rand_uhd.php');
+				this.loadAndApplyWallpaper(randomHistoryUrl, 'https://bing.img.run/rand_uhd.php', { useCors: false, extractTheme: false });
 				return;
 			} else {
 				const randomYear = Math.floor(Math.random() * (currentYear - source.startYear + 1)) + source.startYear;
