@@ -14,7 +14,7 @@
 - 🎨 智能主题色提取，从壁纸自动配色
 - 📍 可调卡片位置（横纵百分比）
 - 🔄 自动切换单词和壁纸
-- 🌄 必应每日壁纸（国际版/中国版双源）
+- 🌄 必应每日壁纸（中国版新 API + 国际版 GitHub 数据）
 
 ## 🚀 快速使用
 
@@ -36,6 +36,21 @@ python -m http.server 8000
 2. **位置调整**：水平/垂直滑块 (0-100%)
 3. **显示控制**：单词/释义开关，动画开关
 4. **自动模式**：设置切换间隔时间
+
+
+## 🖼️ 中国版 Bing 壁纸开放 API
+
+本站中国版壁纸使用以下可直接引用的图片 API：
+
+- 今日壁纸（长期服务）：`https://bing.img.run/uhd.php`
+- 随机历史壁纸：`https://bing.img.run/rand_uhd.php`（收录范围：2020-09-01 至今）
+
+可直接作为 `img` 链接使用：
+
+```html
+<img src="https://bing.img.run/uhd.php" alt="Bing每日壁纸UHD超高清原图" />
+<img src="https://bing.img.run/rand_uhd.php" alt="随机获取Bing历史壁纸UHD超高清原图" />
+```
 
 ## 📄 词书格式
 
