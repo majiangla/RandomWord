@@ -2,9 +2,47 @@
 class WallpaperManager {
 	constructor() {
 		this.currentWallpaperUrl = '';
+		this.currentWallpaperApiUrl = '';
 		this.currentThemeColor = CONSTANTS.DEFAULT_THEME_COLOR;
 		this.isChangingBg = false;
 		this.wallPaperSources = JSON.parse(JSON.stringify(CONSTANTS.WALLPAPER_SOURCES));
+	}
+
+	// 设置中国版今日壁纸（初始化用）
+	setChineseDailyBackground() {
+		const dailyWallpaperUrl = 'https://bing.img.run/uhd.php';
+		this.currentWallpaperApiUrl = dailyWallpaperUrl;
+		this.loadAndApplyWallpaper(dailyWallpaperUrl, dailyWallpaperUrl);
+	}
+
+	// 加载并应用壁纸
+	loadAndApplyWallpaper(imageUrl, downloadUrl = imageUrl) {
+		this.currentWallpaperUrl = downloadUrl;
+
+		const img = new Image();
+		img.crossOrigin = 'anonymous';
+
+		img.onload = () => {
+			try {
+				const avgColor = this.getImageAverageColor(img);
+				if (avgColor) {
+					this.applyThemeColor(avgColor);
+				} else {
+					Logger.logError('无法获取平均色，保持当前主题色');
+				}
+			} catch (e) {
+				Logger.logError(`更新主题色失败: ${e.message}`);
+			}
+
+			this.applyWallpaperTransition(imageUrl);
+		};
+
+		img.onerror = () => {
+			Logger.logError('壁纸加载失败，保持当前背景和主题');
+			this.isChangingBg = false;
+		};
+
+		img.src = imageUrl;
 	}
 	
 	// 获取图片平均颜色
@@ -121,22 +159,10 @@ class WallpaperManager {
 			const currentMonth = now.getMonth() + 1;
 			
 			if (isChinese) {
-				let randomYear, randomMonth;
-				if (currentYear === source.startYear) {
-					randomMonth = Math.floor(Math.random() * (currentMonth - source.startMonth + 1)) + source.startMonth;
-					randomYear = currentYear;
-				} else {
-					const totalMonths = (currentYear - source.startYear) * 12 + currentMonth - source.startMonth;
-					const randomOffset = Math.floor(Math.random() * (totalMonths + 1));
-					randomYear = source.startYear + Math.floor(randomOffset / 12);
-					randomMonth = source.startMonth + (randomOffset % 12);
-					
-					if (randomYear === currentYear && randomMonth > currentMonth) {
-						randomMonth = currentMonth;
-					}
-				}
-				
-				githubUrl = `https://raw.githubusercontent.com/niumoo/bing-wallpaper/refs/heads/main/zh-cn/picture/${randomYear}-${String(randomMonth).padStart(2, '0')}/README.md`;
+				const randomHistoryUrl = `https://bing.img.run/rand_uhd.php?t=${Date.now()}`;
+				this.currentWallpaperApiUrl = randomHistoryUrl;
+				this.loadAndApplyWallpaper(randomHistoryUrl, 'https://bing.img.run/rand_uhd.php');
+				return;
 			} else {
 				const randomYear = Math.floor(Math.random() * (currentYear - source.startYear + 1)) + source.startYear;
 				let randomMonth;
@@ -164,32 +190,8 @@ class WallpaperManager {
 			if (wallpapers.length > 0) {
 				const randomIndex = Math.floor(Math.random() * wallpapers.length);
 				const selectedWallpaper = wallpapers[randomIndex];
-				this.currentWallpaperUrl = selectedWallpaper.url;
-				
-				const img = new Image();
-				img.crossOrigin = "anonymous";
-				
-				img.onload = () => {
-					try {
-						const avgColor = this.getImageAverageColor(img);
-						if (avgColor) {
-							this.applyThemeColor(avgColor);
-						} else {
-							Logger.logError('无法获取平均色，保持当前主题色');
-						}
-					} catch (e) {
-						Logger.logError(`更新主题色失败: ${e.message}`);
-					}
-					
-					this.applyWallpaperTransition(selectedWallpaper.url);
-				};
-				
-				img.onerror = () => {
-					Logger.logError('壁纸加载失败，保持当前背景和主题');
-					this.isChangingBg = false;
-				};
-				
-				img.src = selectedWallpaper.url;
+				this.currentWallpaperApiUrl = selectedWallpaper.url;
+				this.loadAndApplyWallpaper(selectedWallpaper.url);
 			} else {
 				Logger.logError('未找到壁纸数据，保持当前背景和主题');
 				this.isChangingBg = false;

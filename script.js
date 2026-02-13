@@ -26,8 +26,8 @@ class VocabularyApp {
 		// 显示随机单词
 		this.showRandomWord();
 		
-		// 设置壁纸
-		this.wallpaperManager.setRandomBingBackground();
+		// 设置壁纸（初始化固定为中国版必应今日壁纸）
+		this.wallpaperManager.setChineseDailyBackground();
 		
 		// 设置全局事件监听
 		this.setupGlobalEventListeners();
